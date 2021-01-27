@@ -7,11 +7,13 @@
 
 import Cocoa
 
-class ViewController: NSViewController {
+class ViewController: NSViewController, NSTextFieldDelegate, NSWindowDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+                
 
+    
         // Do any additional setup after loading the view.
     }
 
