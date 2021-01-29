@@ -6,6 +6,10 @@
 //
 
 import Cocoa
+import Carbon
+
+import HotKey
+
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
@@ -14,12 +18,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     
+    let leftHotKey = HotKey(key: .leftArrow, modifiers: [.control, .option])
+    let rightHotKey = HotKey(key: .rightArrow, modifiers: [.control, .option])
+    
+    enum Side {
+        case left
+        case right
+        case bottom
+    }
+    
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        statusItem.button?.title = "h";
+        statusItem.button?.title = "w";
         statusItem.button?.target = self
         statusItem.button?.action = #selector(showSettings);
         
-        listen()
+        leftHotKey.keyDownHandler = {
+            self.snapWindow(side: .left)
+        }
+        rightHotKey.keyDownHandler = {
+            self.snapWindow(side: .right)
+        }
+        
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -47,66 +67,70 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
     
     
-    func listen() {
+    func snapWindow(side: Side) {
+        let type = CGWindowListOption.optionOnScreenOnly
+        let windowList = CGWindowListCopyWindowInfo(type, kCGNullWindowID) as NSArray? as? [[String: AnyObject]]
         
-        
-        NSEvent.addGlobalMonitorForEvents(matching: NSEvent.EventTypeMask.mouseMoved, handler: {(mouseEvent:NSEvent) in
-            self.mousePosition = mouseEvent.locationInWindow
-//            print(self.mousePosition)
-        })
-        
-        
-        NSEvent.addGlobalMonitorForEvents(matching: NSEvent.EventTypeMask.leftMouseDragged, handler: {(mouseEvent:NSEvent) in
-//            print("dragging at ")
-        })
-        
-        
-        NSEvent.addGlobalMonitorForEvents(matching: NSEvent.EventTypeMask.leftMouseDown, handler: {(mouseEvent:NSEvent) in
-            print(self.mousePosition)
+        for entry in windowList! {
             
-            let type = CGWindowListOption.optionOnScreenOnly
-            let windowList = CGWindowListCopyWindowInfo(type, kCGNullWindowID) as NSArray? as? [[String: AnyObject]]
+            let frontmostAppPID = NSWorkspace.shared.frontmostApplication?.processIdentifier
             
-            for entry  in windowList!
-            {
-                let owner = entry[kCGWindowOwnerName as String] as! String
-                var bounds = entry[kCGWindowBounds as String] as? [String: Int]
-                let pid = entry[kCGWindowOwnerPID as String] as? Int32
+            if entry["kCGWindowOwnerPID"] as? pid_t == frontmostAppPID {
                 
-                if owner == "Terminal"
+                let appRef = AXUIElementCreateApplication(frontmostAppPID!);
+                var value: AnyObject?
+                
+                AXUIElementCopyAttributeValue(appRef, kAXWindowsAttribute as CFString, &value)
+                
+                if let windows = value as? [AXUIElement]
                 {
-                    
-                    let appRef = AXUIElementCreateApplication(pid!);  //TopLevel Accessability Object of PID
-                    var value: AnyObject?
-                    
-                    
-                    let result = AXUIElementCopyAttributeValue(appRef, kAXWindowsAttribute as CFString, &value)
-                    
-                    
-                    if let windows = value as? [AXUIElement]
-                    {
-                        for window in windows {
-                            var position : CFTypeRef
-                            var size : CFTypeRef
-                            var  newPoint = CGPoint(x: 0, y: 0)
-                            var newSize = CGSize(width: 800, height: 800)
+                    for window in windows {
+                        var newPoint: CGPoint?
+                        var newSize: CGSize?
+                        
+                        if side == .left {
+                            newPoint = CGPoint(x: (NSScreen.main?.visibleFrame.minX)! + 1, y: 0)
+                            newSize = CGSize(width: (NSScreen.main?.frame.width)!/2 - (NSScreen.main?.visibleFrame.minX)!, height:  (NSScreen.main?.frame.height)!)
                             
-                            position = AXValueCreate(AXValueType(rawValue: kAXValueCGPointType)!,&newPoint)!;
-                            AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, position);
-                            
-                            size = AXValueCreate(AXValueType(rawValue: kAXValueCGSizeType)!,&newSize)!;
-                            AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, size);
                         }
                         
+                        else if side == .right {
+                            newPoint = CGPoint(x: (NSScreen.main?.frame.width)!/2 + 2, y: 0)
+                            
+                            if self.getDockPosition() == .right {
+                                newSize = CGSize(width: (NSScreen.main?.frame.width)!/2 - ((NSScreen.main?.frame.width)! - (NSScreen.main?.visibleFrame.width)!)-1, height:  (NSScreen.main?.frame.height)!)
+                            } else {
+                                newSize = CGSize(width: (NSScreen.main?.frame.width)!/2, height:  (NSScreen.main?.frame.height)!)
+                            }
+            
+                        }
+                        
+                        let position = AXValueCreate(AXValueType(rawValue: kAXValueCGPointType)!,&newPoint)!;
+                        AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, position);
+                        
+                        let size = AXValueCreate(AXValueType(rawValue: kAXValueCGSizeType)!,&newSize)!;
+                        AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, size);
+                
                     }
+                    
                 }
+                break
             }
             
-            
-        })
-        
+        }
     }
     
+    func getDockPosition() -> Side {
+        if NSScreen.main!.visibleFrame.origin.y == 0 {
+            if NSScreen.main!.visibleFrame.origin.x == 0 {
+                return .right
+            } else {
+                return .left
+            }
+        } else {
+            return .bottom
+        }
+    }
     
 }
 
