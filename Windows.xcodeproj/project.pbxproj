@@ -11,9 +11,9 @@
 		3721CE0C25C18E41008187CC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3721CE0B25C18E41008187CC /* ViewController.swift */; };
 		3721CE0E25C18E42008187CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3721CE0D25C18E42008187CC /* Assets.xcassets */; };
 		3721CE1125C18E42008187CC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3721CE0F25C18E42008187CC /* Main.storyboard */; };
-		3721CE1B25C2D8D9008187CC /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3721CE1A25C2D8D9008187CC /* MainWindowController.swift */; };
 		3750160125C30146006C1E4B /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 3750160025C30146006C1E4B /* HotKey */; };
 		3750160525C41967006C1E4B /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 3750160425C41967006C1E4B /* LaunchAtLogin */; };
+		375E5A5B25C42E870032FE1E /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375E5A5A25C42E870032FE1E /* WindowManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,7 +24,7 @@
 		3721CE1025C18E42008187CC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3721CE1225C18E42008187CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3721CE1325C18E42008187CC /* Windows.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Windows.entitlements; sourceTree = "<group>"; };
-		3721CE1A25C2D8D9008187CC /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
+		375E5A5A25C42E870032FE1E /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +65,7 @@
 				3721CE0F25C18E42008187CC /* Main.storyboard */,
 				3721CE1225C18E42008187CC /* Info.plist */,
 				3721CE1325C18E42008187CC /* Windows.entitlements */,
-				3721CE1A25C2D8D9008187CC /* MainWindowController.swift */,
+				375E5A5A25C42E870032FE1E /* WindowManager.swift */,
 			);
 			path = Windows;
 			sourceTree = "<group>";
@@ -170,7 +170,7 @@
 			files = (
 				3721CE0C25C18E41008187CC /* ViewController.swift in Sources */,
 				3721CE0A25C18E41008187CC /* AppDelegate.swift in Sources */,
-				3721CE1B25C2D8D9008187CC /* MainWindowController.swift in Sources */,
+				375E5A5B25C42E870032FE1E /* WindowManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
